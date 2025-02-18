@@ -224,6 +224,7 @@ export function registerDataConnectionsRoute(router: IRouter, dataSourceEnabled:
           const client = await context.dataSource.opensearch.legacy.getClient(dataSourceMDSId);
           dataConnectionsresponse = await client.callAPI('ppl.getDataConnections');
         } else {
+          console.log('dataSourceMDSId:', dataSourceMDSId);
           dataConnectionsresponse = await context.opensearch_data_source_management.dataSourceManagementClient
             .asScoped(request)
             .callAsCurrentUser('ppl.getDataConnections');

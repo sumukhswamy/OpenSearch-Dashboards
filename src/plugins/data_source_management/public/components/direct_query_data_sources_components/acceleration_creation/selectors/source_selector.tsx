@@ -75,10 +75,13 @@ export const AccelerationDataSourceSelector = ({
   );
 
   const loadDataSource = () => {
+    console.log('loading data source', dataSourceMDSId);
+    console.log(dataSourceMDSId ?? '', 'here in loadDataSource', selectedDatasource);
     setLoadingComboBoxes({ ...loadingComboBoxes, dataSource: true });
     http
       .get(`${DATACONNECTIONS_BASE}/dataSourceMDSId=${dataSourceMDSId ?? ''}`)
       .then((res) => {
+        console.log(res, 'res in loadDataSource');
         const isValidDataSource = res.some(
           (connection: any) =>
             connection.connector.toUpperCase() === 'S3GLUE' &&

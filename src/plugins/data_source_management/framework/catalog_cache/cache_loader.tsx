@@ -8,7 +8,7 @@ import { HttpStart, NotificationsStart } from 'opensearch-dashboards/public';
 import { ASYNC_POLLING_INTERVAL, SPARK_HIVE_TABLE_REGEX, SPARK_PARTITION_INFO } from '../constants';
 import {
   AsyncPollingResult,
-  CachedAccelerations,
+  CachedAcceleration,
   CachedColumn,
   CachedDataSourceStatus,
   CachedTable,
@@ -147,7 +147,7 @@ export const updateAccelerationsToCache = (
 
   const combinedData = combineSchemaAndDatarows(pollingResult.schema, pollingResult.datarows);
 
-  const newAccelerations: CachedAccelerations[] = combinedData.map((row: any) => ({
+  const newAccelerations: CachedAcceleration[] = combinedData.map((row: any) => ({
     flintIndexName: row.flint_index_name,
     type: row.kind === 'mv' ? 'materialized' : row.kind,
     database: row.database,
@@ -286,8 +286,12 @@ export const createLoadQuery = (
   return query;
 };
 
-export const useLoadToCache = (loadCacheType: LoadCacheType) => {
-  const sqlService = new SQLService({} as HttpStart);
+export const useLoadToCache = (
+  loadCacheType: LoadCacheType,
+  http: HttpStart,
+  notifications: NotificationsStart
+) => {
+  const sqlService = new SQLService(http);
   const [currentDataSourceName, setCurrentDataSourceName] = useState('');
   const [currentDatabaseName, setCurrentDatabaseName] = useState<string | undefined>('');
   const [currentTableName, setCurrentTableName] = useState<string | undefined>('');
@@ -408,22 +412,34 @@ export const useLoadToCache = (loadCacheType: LoadCacheType) => {
   return { loadStatus, startLoading, stopLoading };
 };
 
-export const useLoadDatabasesToCache = () => {
-  const { loadStatus, startLoading, stopLoading } = useLoadToCache('databases');
+export const useLoadDatabasesToCache = (http: HttpStart, notifications: NotificationsStart) => {
+  const { loadStatus, startLoading, stopLoading } = useLoadToCache(
+    'databases',
+    http,
+    notifications
+  );
   return { loadStatus, startLoading, stopLoading };
 };
 
-export const useLoadTablesToCache = () => {
-  const { loadStatus, startLoading, stopLoading } = useLoadToCache('tables');
+export const useLoadTablesToCache = (http: HttpStart, notifications: NotificationsStart) => {
+  const { loadStatus, startLoading, stopLoading } = useLoadToCache('tables', http, notifications);
   return { loadStatus, startLoading, stopLoading };
 };
 
-export const useLoadTableColumnsToCache = () => {
-  const { loadStatus, startLoading, stopLoading } = useLoadToCache('tableColumns');
+export const useLoadTableColumnsToCache = (http: HttpStart, notifications: NotificationsStart) => {
+  const { loadStatus, startLoading, stopLoading } = useLoadToCache(
+    'tableColumns',
+    http,
+    notifications
+  );
   return { loadStatus, startLoading, stopLoading };
 };
 
-export const useLoadAccelerationsToCache = () => {
-  const { loadStatus, startLoading, stopLoading } = useLoadToCache('accelerations');
+export const useLoadAccelerationsToCache = (http: HttpStart, notifications: NotificationsStart) => {
+  const { loadStatus, startLoading, stopLoading } = useLoadToCache(
+    'accelerations',
+    http,
+    notifications
+  );
   return { loadStatus, startLoading, stopLoading };
 };
