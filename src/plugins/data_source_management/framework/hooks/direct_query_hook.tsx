@@ -32,7 +32,8 @@ export const useDirectQuery = (
     return sqlService.fetchWithJobId(params, dataSourceMDSId || '');
   }, ASYNC_POLLING_INTERVAL);
 
-  const startLoading = (requestPayload: DirectQueryRequest) => {
+  const startLoading = (requestPayload: DirectQueryRequest, dataSourceMDSId?: string) => {
+
     setLoadStatus(DirectQueryLoadingStatus.SCHEDULED);
 
     const sessionId = getAsyncSessionId(requestPayload.datasource);

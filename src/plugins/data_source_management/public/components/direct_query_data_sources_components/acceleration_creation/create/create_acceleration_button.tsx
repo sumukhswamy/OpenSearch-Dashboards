@@ -55,7 +55,7 @@ export const CreateAccelerationButton = ({
       datasource: accelerationFormData.dataSource,
     };
 
-    startDirectQuery(requestPayload);
+    startDirectQuery(requestPayload, dataSourceMDSId);
     setIsLoading(true);
   };
 

@@ -27,7 +27,7 @@ import {
   IAuthenticationMethodRegistry,
   AuthenticationMethodRegistry,
 } from './auth_registry';
-import { noAuthCredentialAuthMethod, sigV4AuthMethod, usernamePasswordAuthMethod } from './types';
+import { noAuthCredentialAuthMethod, CacheStart, sigV4AuthMethod, usernamePasswordAuthMethod } from './types';
 import { DataSourceSelectorProps } from './components/data_source_selector/data_source_selector';
 import { createDataSourceMenu } from './components/data_source_menu/create_data_source_menu';
 import { DataSourceMenuProps } from './components/data_source_menu';
@@ -52,6 +52,8 @@ import { AccelerationDetailsFlyout } from './components/direct_query_data_source
 import { CreateAcceleration } from './components/direct_query_data_sources_components/acceleration_creation/create/create_acceleration';
 import { AssociatedObjectsDetailsFlyout } from './components/direct_query_data_sources_components/associated_object_management/associated_objects_details_flyout';
 import { getScopedBreadcrumbs } from '../../opensearch_dashboards_react/public';
+import { CatalogCacheManager } from '../framework/catalog_cache/cache_manager';
+import { useLoadAccelerationsToCache, useLoadDatabasesToCache, useLoadTableColumnsToCache, useLoadTablesToCache } from '../framework/catalog_cache/cache_loader';
 
 export const [
   getRenderAccelerationDetailsFlyout,
@@ -104,7 +106,8 @@ export class DataSourceManagementPlugin
     Plugin<
       DataSourceManagementPluginSetup,
       DataSourceManagementPluginStart,
-      DataSourceManagementSetupDependencies
+      DataSourceManagementSetupDependencies,
+      CacheStart
     > {
   private started = false;
   private authMethodsRegistry = new AuthenticationMethodRegistry();
@@ -302,9 +305,22 @@ export class DataSourceManagementPlugin
       );
     };
     setRenderAssociatedObjectsDetailsFlyout(renderAssociatedObjectsDetailsFlyout);
-
+    const CatalogCacheManagerInstance = CatalogCacheManager;
+    const useLoadDatabasesToCacheHook = useLoadDatabasesToCache;
+    const useLoadTablesToCacheHook = useLoadTablesToCache;
+    const useLoadTableColumnsToCacheHook = useLoadTableColumnsToCache;
+    const useLoadAccelerationsToCacheHook = useLoadAccelerationsToCache;
+    // Export so other plugins can use this flyout
     return {
       getAuthenticationMethodRegistry: () => this.authMethodsRegistry,
+      renderAccelerationDetailsFlyout,
+      renderAssociatedObjectsDetailsFlyout,
+      renderCreateAccelerationFlyout,
+      CatalogCacheManagerInstance,
+      useLoadDatabasesToCacheHook,
+      useLoadTablesToCacheHook,
+      useLoadTableColumnsToCacheHook,
+      useLoadAccelerationsToCacheHook,
     };
   }
 
